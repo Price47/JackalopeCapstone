@@ -1,0 +1,35 @@
+#!/bin/bash
+DIR=$(pwd)
+
+mkdir KinectLibs
+cd KinectLibs
+
+#Clone Git repos for Kinect into KinectLibs Folder#
+
+git clone https://github.com/OpenKinect/libfreenect
+git clone https://github.com/OpenNI/OpenNI
+git clone https://github.com/avin2/SensorKinect
+
+#Install repos and make packages needed for the Kinect's functions.#
+#If the 'libgulut3-dev' package can't be found, the freeglut3-dev is fine.#
+
+sudo apt-get install cmake libglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev python
+if [ "$?" = "100" ]
+then
+echo 'Cannot find package libglut3-dev, installing freeglut3-dev (All good though)'
+sudo apt-get install cmake freeglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev python
+fi
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+sudo apt-get install doxygen mono-complete graphviz
+
+#Make openKinect in folder 'Build'#
+
+mkdir Build
+cd Build
+cmake ..
+make
+sudo make install
+sudo ldconfig /usr/local/lib64
+
