@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import wiringpi2 as wiringpi
 import time
+import readchar
 
 # Define main trigger and sensor echo pins
 CENTER_TRIG = 18 # TRIGGER - GPIO PIN 15
@@ -87,10 +88,58 @@ def test_getting_all_distances():
 	for sensor in sensors:
 	    print ("Distance for sensor position " + str(sensor.position) + " is:  " + str(get_distance(sensor)))
 
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the screen."""
+    def __init__(self):
+        self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
 
 
-init()
-test_getting_all_distances()  
+class _GetchUnix:
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+def test_driving_functions():
+    input = ''
+    while input != "\'x\'":
+	input = repr(readchar.readchar())
+	if input == "\'w\'":
+	    drive_forward()
+	elif input == "\'a\'":
+	    turn_left()
+	elif input == "\'s\'":
+	    drive_backward()
+	elif input == "\'d\'":
+	    turn_right()
+
+def drive_forward():
+    print "Driving forward"
+
+def turn_left():
+    print "Turning left"
+
+def drive_backward():
+    print "Going backwards"
+
+def turn_right():
+    print "Turning right"
+
+
+#init()
+test_driving_functions()
+#test_getting_all_distances()  
 
 
 #Algorithm for rotating is as follows:
