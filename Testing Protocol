@@ -1,0 +1,16 @@
+Safety Plan:
+
+5 members of the group will be present during testing of the robot. General responsibilities will be as follows:
+
+Melissa: Outside of the pool watching over all members, keeping track of progress, and writing notes.
+Richard: Outside of the water working on the computer. Will be operating the robot and keeping track of it's status.
+Matej: Swimmer in the water, for testing robot sensors and taking care of robot.
+Kevin: Swimmer in the water, for testing robot sensors and taking care of robot.
+Olivier: Swimmer in the water, for testing robot sensors and taking care of robot.
+
+General outline of testing:
+- Turn on robot outside of pool, ensure connections are functioning as expected.
+- Swimmers get into pool, and the team lowers the robot into the water, bringing it to the bottom
+- Testing of robot will take place now. Swimmers will be moving/staying still to simulate the algorithm we've developed. Swimmers will be working and communicating with external group members to get feedback on how the robot is responding.
+- Testing will be done for as long as we have time allotted
+- When testing is done, swimmers will pick up the robot and remove from the pool, cleanup, and leave
