@@ -28,7 +28,7 @@ sudo apt-get install doxygen mono-complete graphviz
 
 mkdir Build
 cd Build
-cmake ..
+cmake ../libfreenect
 make
 sudo make install
 sudo ldconfig /usr/local/lib64
