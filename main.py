@@ -3,10 +3,8 @@ import time
 
 k = Kinect()
 
-end_time = time.time() + 3
+end_time = time.time() + 5
 
+k.run(4)
 
-d = k.update()
-for data in d:
-    print data
 

@@ -12,17 +12,6 @@ from pylibfreenect2 import LoggerLevel
 class Kinect:
 
     def __init__(self):
-        # Kinect Hardware specifications #
-        cx = 254.878
-        cy = 205.395
-        fx = 365.456
-        fy = 365.456
-        k1 = 0.0905474
-        k2 = -0.0950862
-        k3 = 0.0950862
-        p1 = 0.0
-        p2 = 0.0
-
         self.averageSpineX = 0
 
         self.fn = Freenect2()
@@ -39,6 +28,9 @@ class Kinect:
 
         self.logger = createConsoleLogger(LoggerLevel.Debug)
 
+        self.device = self.fn.openDevice(self.serial)
+
+
 
     def valueBounded(self, checkValue, absoluteValue):
         if((-absoluteValue <= checkValue >= absoluteValue)):
@@ -54,14 +46,11 @@ class Kinect:
             return False
 
     def update(self):
-        device = self.fn.openDevice(self.serial)
-        device.start()
+        self.device.setColorFrameListener(self.listener)
+        self.device.setIrAndDepthFrameListener(self.listener)
 
-        device.setColorFrameListener(self.listener)
-        device.setIrAndDepthFrameListener(self.listener)
-
-        self.registration = Registration(device.getIrCameraParams(),
-                                         device.getColorCameraParams())
+        self.registration = Registration(self.device.getIrCameraParams(),
+                                         self.device.getColorCameraParams())
 
         self.registered = Frame(512, 424, 4)
         self.undistorted = Frame(512, 424, 4)
@@ -78,8 +67,6 @@ class Kinect:
 
         self.registration.apply(color, depth, self.undistorted, self.registered)
         self.listener.release(frames)
-
-        device.stop()
 
         return d
 
@@ -199,6 +186,14 @@ class Kinect:
                  'averageX' :depth['skeletonPoints']['averageX']}
 
         self.changeInX(spine)
+
+
+    def run(self, duration):
+        end = time.time() + duration
+        self.device.start()
+        while(time.time()<end):
+            print self.update()
+        self.device.stop()
 
 
 
