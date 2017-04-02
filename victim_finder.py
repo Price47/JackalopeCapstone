@@ -6,6 +6,7 @@ import readchar
 # Define main trigger and sensor echo pins
 CENTER_TRIG = 18 # TRIGGER - GPIO PIN 15
 CENTER_ECHO = 22 # ECHO - GPIO PIN 17
+OUTPUT_ENABLED = 30 # ENABLING OF OUTPUT - GPIO PIN 19
 RIGHT_SENSE_ECHO = 22
 LEFT_SENSE_ECHO = 22
 
@@ -32,26 +33,32 @@ def init():
 
     # Enter all known sensors into array
     sensors.append(Sensor(CENTER_TRIG, CENTER_ECHO, 0))
-    sensors.append(Sensor(CENTER_TRIG, RIGHT_SENSE_ECHO, 1))
-    sensors.append(Sensor(CENTER_TRIG, LEFT_SENSE_ECHO, -1))
+    #sensors.append(Sensor(CENTER_TRIG, RIGHT_SENSE_ECHO, 1))
+    #sensors.append(Sensor(CENTER_TRIG, LEFT_SENSE_ECHO, -1))
+    wiringpi.digitalWrite(OUTPUT_ENABLED, HIGH)
 
     for sensor in sensors: 
         wiringpi.pinMode(sensor.trigger, OUTPUT)
         wiringpi.pinMode(sensor.echo, OUTPUT)
 
+    #wiringpi.digitalWrite(CENTER_TRIG, HIGH)
+    #wiringpi.digitalWrite(CENTER_ECHO, HIGH)
+
 
 def get_distance(sensor):
+    #wiringpi.digitalWrite(30,HIGH)
     wiringpi.digitalWrite(sensor.echo, LOW)
-    wiringpi.digitalWrite(sensor.trigger, HIGH)
     wiringpi.delay(1000)
+    wiringpi.digitalWrite(sensor.trigger, HIGH)
+    wiringpi.delay(1)
     wiringpi.digitalWrite(sensor.trigger, LOW)
     start = time.time()
     while wiringpi.digitalRead(sensor.echo) == LOW:
         wait = True
-        print( "Pin Echo: " + str(wiringpi.digitalRead(sensor.echo)))
+        #print( "Pin Echo: " + str(wiringpi.digitalRead(sensor.echo)))
 
     # Below divide by 340.29 for air distance, or divide by 1484 for water distance
-    return (time.time() - start)/340.29
+    return (time.time() - start)*(340.29/2)
 
 def rotate_robot_to_object(sensor):
     if sensor.position < 0:
@@ -125,21 +132,26 @@ def test_driving_functions():
 	    turn_right()
 
 def drive_forward():
-    print "Driving forward"
+    #print "Driving forward"
+    print "setting trigger high"
+    wiringpi.digitalWrite(CENTER_TRIG, HIGH)
 
 def turn_left():
     print "Turning left"
 
 def drive_backward():
-    print "Going backwards"
+    #print "Going backwards"
+    print "setting trigger low"
+    wiringpi.digitalWrite(CENTER_TRIG, LOW)
+
 
 def turn_right():
     print "Turning right"
 
 
-#init()
-test_driving_functions()
-#test_getting_all_distances()  
+init()
+#test_driving_functions()
+test_getting_all_distances()  
 
 
 #Algorithm for rotating is as follows:
@@ -150,3 +162,6 @@ test_driving_functions()
 #    at that location, and we want more info. Rotate the robot so that the center sonar is now 
 #    ligned up with that object.
 # 4. Wait for feedback from kinect
+
+
+# Ultrasonic sensors have a rise and fall time of 
