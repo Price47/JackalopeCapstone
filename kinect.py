@@ -7,22 +7,11 @@ from pylibfreenect2 import FrameType, Registration, Frame, FrameMap
 from pylibfreenect2 import createConsoleLogger
 from pylibfreenect2 import LoggerLevel
 
+from settings import X_CHANGE_THRESHOLD, DROWN_TIME, KINECT_SPECS
 
 
 class Kinect:
-
     def __init__(self):
-        # Kinect Hardware specifications #
-        cx = 254.878
-        cy = 205.395
-        fx = 365.456
-        fy = 365.456
-        k1 = 0.0905474
-        k2 = -0.0950862
-        k3 = 0.0950862
-        p1 = 0.0
-        p2 = 0.0
-
         self.averageSpineX = 0
 
         self.fn = Freenect2()
@@ -30,22 +19,23 @@ class Kinect:
 
         self.serial = self.fn.getDeviceSerialNumber(0)
 
-
         types = 0
         types |= FrameType.Color
         types |= (FrameType.Ir | FrameType.Depth)
         self.listener = SyncMultiFrameListener(types)
 
-
         self.logger = createConsoleLogger(LoggerLevel.Debug)
 
+        self.device = self.fn.openDevice(self.serial)
+
+        self.depthWidth = 424
+        self.depthHeight = 512
 
     def valueBounded(self, checkValue, absoluteValue):
-        if((-absoluteValue <= checkValue >= absoluteValue)):
+        if ((-absoluteValue <= checkValue >= absoluteValue)):
             return True
         else:
             return False
-
 
     def valueUnbounded(self, checkValue, absoluteValue):
         if ((checkValue > absoluteValue) | (checkValue < -absoluteValue)):
@@ -53,36 +43,36 @@ class Kinect:
         else:
             return False
 
+
+    def depthMatrixToPointCloudPos2(self, depthArray):
+
+        R, C = depthArray.shape
+
+        R -= KINECT_SPECS['cx']
+        R *= depthArray
+        R /= KINECT_SPECS['fx']
+
+        C -= KINECT_SPECS['cy']
+        C *= depthArray
+        C /= KINECT_SPECS['fy']
+
+        return np.column_stack((depthArray.ravel(), R.ravel(), -C.ravel()))
+
     def update(self):
-        device = self.fn.openDevice(self.serial)
-        device.start()
+        self.device.setColorFrameListener(self.listener)
+        self.device.setIrAndDepthFrameListener(self.listener)
 
-        device.setColorFrameListener(self.listener)
-        device.setIrAndDepthFrameListener(self.listener)
-
-        self.registration = Registration(device.getIrCameraParams(),
-                                         device.getColorCameraParams())
-
-        self.registered = Frame(512, 424, 4)
-        self.undistorted = Frame(512, 424, 4)
 
         frames = self.listener.waitForNewFrame()
-
-        ir = frames["ir"]
-        color = frames["color"]
         depth = frames["depth"]
 
         d = depth.asarray()
         self.depthWidth = d.shape[0]
         self.depthHeight = d.shape[1]
 
-        self.registration.apply(color, depth, self.undistorted, self.registered)
         self.listener.release(frames)
 
-        device.stop()
-
         return d
-
 
     # calculate the average and skeleton points of a depth array, those
     # values plus the depth array
@@ -95,20 +85,24 @@ class Kinect:
                 'average': average,
                 'skeletonPoints': skeletonPoints}
 
-
     # calculate mean depth of depth array, used to find skeleton points
     def getMeanDepth(self, depth):
         total = 1
         sumDepth = 0
-        for x in range(0,self.depthWidth):
-            for y in range(0, self.depthHeight):
-                offset = x+y * self.depthWidth
-                d = depth[offset]
-                total += 1
-                sumDepth += d
-
-        return (sumDepth / total)
-
+        undistorted = Frame(424,512,4)
+        rows, columns = depth.shape
+        out = np.zeros((rows * columns, 3), dtype=np.float32)
+        for row in range(rows):
+            for col in range(columns):
+                z = undistorted.asarray(np.float32)[row][col]
+                X, Y, Z = self.depthToPointCloudPos(row, col, z)
+                out[row * columns + col] = np.array([Z, Y, -X])
+        #         offset = x + y * (self.depthWidth)
+        #         d = depth[offset]
+        #         total += 1
+        #         sumDepth += d
+        #
+        # return (sumDepth / total)
 
     # calculate the skeleton points of the depth array
     def getSkeleton(self, depthArray, average):
@@ -118,8 +112,8 @@ class Kinect:
         rightX = self.depthWidth
         for x in range(0, self.depthWidth):
             for y in range(0, self.depthHeight):
-                offset = x+y * self.depthWidth
-                if (depthArray[offset] < (average+200) & depthArray[offset] > (average-200)):
+                offset = x + y * self.depthWidth
+                if (self.valueBounded(depthArray[offset],200)):
                     if (x > leftX):
                         leftX = x
                     if (y < bottomY):
@@ -127,7 +121,7 @@ class Kinect:
                     if (x < rightX):
                         rightX = x
                     if (y > topY):
-                        topY= y
+                        topY = y
 
         averageX = (leftX + rightX) / 2
         returnValues = {'averageX': averageX,
@@ -138,15 +132,13 @@ class Kinect:
 
         return returnValues
 
-
     def changeInX(self, spine):
         if self.averageSpineX == 0:
             self.averageSpineX = spine['averageX']
-        elif(self.valueBounded((self.averageSpineX - spine['averageX']), 50)):
+        elif (self.valueBounded((self.averageSpineX - spine['averageX']), X_CHANGE_THRESHOLD)):
             self.averageSpineX = ((self.averageSpineX + spine['averageX']) / 2)
         else:
             self.checkDrowning()
-
 
     # Check to see if the difference between the averageSpineX and the last
     # analyzed averageX is less below a threshold. If it is, the loop
@@ -158,18 +150,17 @@ class Kinect:
         drowning = False
         falsePositive = 0
         # 20 seconds from start of def #
-        timeLimit = time.time() + 20
+        timeLimit = time.time() + DROWN_TIME
         while drowningRisk:
             if time.time() > timeLimit:
                 drowning = True
             depth = self.getDepthArray()
-            if (self.valueUnbounded((self.averageSpineX - depth['skeletonPoints']['averageX']), 50)):
+            if (self.valueUnbounded((self.averageSpineX - depth['skeletonPoints']['averageX']), X_CHANGE_THRESHOLD)):
                 falsePositive += 1
-                if falsePositive>100:
+                if falsePositive > 100:
                     drowningRisk = False
             else:
                 continue
-
 
     def dataLoop(self):
         dangerThreshold = 750
@@ -178,28 +169,42 @@ class Kinect:
         depth = self.getDepthArray()
         shoulderHeight = (depth['skeletonPoints']['topY']) * (7 / 8)
         body = []
-        for x in range(0,self.depthWidth):
-            for y in range(0,self.depthHeight):
-                offset = x+y*self.depthWidth
+        for x in range(0, self.depthWidth):
+            for y in range(0, self.depthHeight):
+                offset = x + y * self.depthWidth
                 d = depth['depthArray'][offset]
-                if (d > depth['average']-200 & d < depth['average']+200):
+                if (d > depth['average'] - 200 & d < depth['average'] + 200):
                     print "build skeleton"
                     body.append(d)
-                elif(d > 300 & d < dangerThreshold):
+                elif (d > 300 & d < dangerThreshold):
                     print "MOVE THE FUCK BACK"
-                elif(d > dangerThreshold & d < warningThreshold):
+                elif (d > dangerThreshold & d < warningThreshold):
                     print "move back"
-                elif(d > warningThreshold & d < distanceThreshold):
+                elif (d > warningThreshold & d < distanceThreshold):
                     print "good distance"
                 else:
                     print "too far"
 
-        spine = {'topY' : depth['skeletonPoints']['topY'],
+        spine = {'topY': depth['skeletonPoints']['topY'],
                  'bottomY': depth['skeletonPoints']['bottomY'],
-                 'averageX' :depth['skeletonPoints']['averageX']}
+                 'averageX': depth['skeletonPoints']['averageX']}
 
         self.changeInX(spine)
 
+    def run(self, duration):
+        end = time.time() + duration
+        self.device.start()
 
 
+        d = self.update()
+        print d
+        # out = self.depthMatrixToPointCloudPos2(d)
+        # print out
+        # print np.mean(out)
+
+        self.device.stop()
+
+    def exit(self):
+        self.device.stop()
+        self.device.close()
 
