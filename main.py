@@ -3,8 +3,8 @@ import time
 
 k = Kinect()
 
-end_time = time.time() + 5
+k.run(5)
 
-k.run(4)
+#k.run(5)
 
 

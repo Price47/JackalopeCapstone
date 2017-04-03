@@ -10,3 +10,6 @@ KINECT_SPECS = {
         'p1' : 0.0,
         'p2' : 0.0
 }
+
+X_CHANGE_THRESHOLD = 50
+DROWN_TIME = 10
