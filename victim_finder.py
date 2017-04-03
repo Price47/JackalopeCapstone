@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+                                                                                                                                                                                                     #! /usr/bin/env python
 import wiringpi2 as wiringpi
 import time
 import readchar
@@ -9,6 +9,12 @@ CENTER_ECHO = 22 # ECHO - GPIO PIN 17
 OUTPUT_ENABLED = 30 # ENABLING OF OUTPUT - GPIO PIN 19
 RIGHT_SENSE_ECHO = 22
 LEFT_SENSE_ECHO = 22
+
+# Define driving pins
+FORWARD_DRIVE = 22 # GPIO PIN 26
+BACKWARD_DRIVE = 25 # GPIO PIN 24
+PISTON_UP = 31 # GPIO PIN 22
+PISTON_DOWN = 28 # GPIO PIN 20
 
 # Define global constants
 OUTPUT = 1
@@ -78,8 +84,8 @@ def watch_for_possible_victim():
     while True:
 	for sensor in sensors:
 	    temp_dist = get_distance(sensor)
-	    # if the sonar reading is more than 5% off the baseline, something could be up
-	    if abs(temp_dist-sensor.baseline) > temp_dist*.05:
+	    # if the sonars detect an object within a 3 meter radius, take a closer look
+	    if temp_dist < 3.0:
 		rotate_robot_to_object(sensor)
 		sensor.baseline = temp_dist
 		analyze_with_kinect()
@@ -95,30 +101,13 @@ def test_getting_all_distances():
 	for sensor in sensors:
 	    print ("Distance for sensor position " + str(sensor.position) + " is:  " + str(get_distance(sensor)))
 
-class _Getch:
-    """Gets a single character from standard input.  Does not echo to the screen."""
-    def __init__(self):
-        self.impl = _GetchUnix()
-
-    def __call__(self): return self.impl()
-
-
-class _GetchUnix:
-    def __init__(self):
-        import tty, sys
-
-    def __call__(self):
-        import sys, tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
-
 def test_driving_functions():
+    print("w: Move Forward")
+    print("a: Move Backward")
+    print("s: Turn Left")
+    print("d: Turn Right")
+    print("k: Stop All Movement")
+    print("l: Retract Piston")
     input = ''
     while input != "\'x\'":
 	input = repr(readchar.readchar())
@@ -130,28 +119,61 @@ def test_driving_functions():
 	    drive_backward()
 	elif input == "\'d\'":
 	    turn_right()
+	elif input == "\'k\'":
+	    print("stopping all")
+	    stop_all()
+	elif input == "\'l\'":
+	    print ("")
+	    reset_piston()
+    stop_all()
+
+def stop_all():
+    wiringpi.digitalWrite(FORWARD_DRIVE, LOW)
+    wiringpi.digitalWrite(BACKWARD_DRIVE, LOW)
+    wiringpi.digitalWrite(PISTON_UP, LOW)
+    wiringpi.digitalWrite(PISTON_DOWN, LOW)
+
 
 def drive_forward():
-    #print "Driving forward"
-    print "setting trigger high"
-    wiringpi.digitalWrite(CENTER_TRIG, HIGH)
-
-def turn_left():
-    print "Turning left"
+    stop_all()
+    wiringpi.digitalWrite(FORWARD_DRIVE, HIGH)
 
 def drive_backward():
-    #print "Going backwards"
-    print "setting trigger low"
-    wiringpi.digitalWrite(CENTER_TRIG, LOW)
+    stop_all()
+    wiringpi.digitalWrite(BACKWARD_DRIVE, HIGH)
 
+def turn_left():
+    stop_all()
+    wiringpi.digitalWrite(PISTON_UP, HIGH)
+    wiringpi.delay(2000)
+    wiringpi.digitalWrite(PISTON_UP, LOW)
+    wiringpi.digitalWrite(FORWARD_DRIVE, HIGH)
 
 def turn_right():
-    print "Turning right"
+    stop_all()
+    wiringpi.digitalWrite(PISTON_UP, HIGH)  
+    wiringpi.delay(2000)
+    wiringpi.digitalWrite(PISTON_UP, LOW)
+    wiringpi.digitalWrite(BACKWARD_DRIVE, HIGH)
 
+def reset_piston():
+    stop_all()
+    wiringpi.digitalWrite(PISTON_DOWN, HIGH)
+    wiringpi.delay(2000)
+    wiringpi.digitalWrite(PISTON_DOWN, LOW)
+
+#def test_gpio():
+#    input = ''
+#    while input != "\'x\'":
+#        input = repr(readchar.readchar())
+##        if input == "\'w\'":
+#            wiringpi.digitalWrite(,HIGH)
+#        elif input == "\'a\'":
+#            wiringpi.digitalWrite(,LOW)
 
 init()
-#test_driving_functions()
-test_getting_all_distances()  
+test_driving_functions()
+#test_getting_all_distances()  
 
 
 #Algorithm for rotating is as follows:
