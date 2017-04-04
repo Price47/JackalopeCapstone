@@ -7,7 +7,8 @@ from pylibfreenect2 import FrameType, Registration, Frame, FrameMap
 from pylibfreenect2 import createConsoleLogger
 from pylibfreenect2 import LoggerLevel
 
-from settings import X_CHANGE_THRESHOLD, DROWN_TIME, KINECT_SPECS
+from settings import (X_CHANGE_THRESHOLD, DROWN_TIME, KINECT_SPECS, DANGER_THRESHOLD,
+                        WARNING_THRESHOLD,DISTANCE_THRESHOLD)
 
 
 class Kinect:
@@ -109,23 +110,30 @@ class Kinect:
         return (sumDepth / total)
 
     # calculate the skeleton points of the depth array
-    def getSkeleton(self, depthArray, average):
+    def getSkeleton(self, depthArray, rows, columns, average):
         topY = 0
         leftX = 0
         bottomY = self.depthHeight
         rightX = self.depthWidth
-        for x in range(0, self.depthWidth):
-            for y in range(0, self.depthHeight):
-                offset = x + y * self.depthWidth
+
+        rows, columns = depthArray.shape
+        depthArray = depthArray.ravel()
+
+        for row in range(rows):
+            for col in range(columns):
+                try:
+                    offset = row + col * (rows)
+                except IndexError as e:
+                    print e
                 if (self.valueBounded(depthArray[offset],200)):
-                    if (x > leftX):
-                        leftX = x
-                    if (y < bottomY):
-                        bottomY = y
-                    if (x < rightX):
-                        rightX = x
-                    if (y > topY):
-                        topY = y
+                    if (row > leftX):
+                        leftX = row
+                    if (col < bottomY):
+                        bottomY = col
+                    if (row < rightX):
+                        rightX = row
+                    if (col > topY):
+                        topY = col
 
         averageX = (leftX + rightX) / 2
         returnValues = {'averageX': averageX,
@@ -167,9 +175,9 @@ class Kinect:
                 continue
 
     def dataLoop(self):
-        dangerThreshold = 750
-        warningThreshold = 900
-        distanceThreshold = 3500
+        dangerThreshold = DANGER_THRESHOLD
+        warningThreshold = WARNING_THRESHOLD
+        distanceThreshold = DISTANCE_THRESHOLD
         depth = self.getDepthArray()
         shoulderHeight = (depth['skeletonPoints']['topY']) * (7 / 8)
         body = []
