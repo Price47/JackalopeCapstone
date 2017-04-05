@@ -177,7 +177,7 @@ def test_gpio():
             wiringpi.digitalWrite(pin,LOW)
 
 init()
-test_gpio()
+#test_gpio()
 #test_driving_functions()
 #test_getting_all_distances()  
 
