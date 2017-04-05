@@ -12,8 +12,15 @@ KINECT_SPECS = {
 }
 
 X_CHANGE_THRESHOLD = 50
-DROWN_TIME = 10
+DROWN_TIME = 5
 
+# run time in seconds #
+RUN_TIME = 600
+
+# for capturing body points #
+BODY_DEPTH_THRESHOLD = 100
+
+# various distance thresholds #
 DANGER_THRESHOLD = 750
 WARNING_THRESHOLD = 900
-DISTANCE_THRESHOLD = 3500
+DISTANCE_THRESHOLD = 4500

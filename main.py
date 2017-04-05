@@ -1,13 +1,14 @@
 from kinect import Kinect
 import time
+from settings import RUN_TIME
 
 k = Kinect()
 
-means = k.run(6)
+#k.run(6)
 #
 # for m in means:
 #     print m
 
-#k.run(5)
-
+# k.execute()
+k.run(RUN_TIME)
 
