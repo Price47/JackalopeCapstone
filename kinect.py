@@ -28,8 +28,11 @@ class Kinect:
 
         self.device = self.fn.openDevice(self.serial)
 
-        self.depthWidth = 424
-        self.depthHeight = 512
+        self.device.setColorFrameListener(self.listener)
+        self.device.setIrAndDepthFrameListener(self.listener)
+
+        self.undistorted = Frame(512, 424, 4)
+        self.registered = Frame(512, 424, 4)
 
     def valueBounded(self, checkValue, absoluteValue):
         if ((-absoluteValue <= checkValue >= absoluteValue)):
@@ -58,17 +61,17 @@ class Kinect:
 
         return np.column_stack((depthArray.ravel(), R.ravel(), -C.ravel()))
 
-    def update(self):
+    def update(self, registration):
         self.device.setColorFrameListener(self.listener)
         self.device.setIrAndDepthFrameListener(self.listener)
 
-
         frames = self.listener.waitForNewFrame()
         depth = frames["depth"]
+        color = frames["color"]
 
-        d = depth.asarray()
-        self.depthWidth = d.shape[0]
-        self.depthHeight = d.shape[1]
+        d = self.undistorted.asarray(dtype=np.float32)
+
+        registration.apply(color, depth, self.undistorted, self.registered)
 
         self.listener.release(frames)
 
@@ -87,22 +90,23 @@ class Kinect:
 
     # calculate mean depth of depth array, used to find skeleton points
     def getMeanDepth(self, depth):
-        total = 1
+        total = 0
         sumDepth = 0
-        undistorted = Frame(424,512,4)
+
         rows, columns = depth.shape
-        out = np.zeros((rows * columns, 3), dtype=np.float32)
+        depthArray = depth.ravel()
+
         for row in range(rows):
             for col in range(columns):
-                z = undistorted.asarray(np.float32)[row][col]
-                X, Y, Z = self.depthToPointCloudPos(row, col, z)
-                out[row * columns + col] = np.array([Z, Y, -X])
-        #         offset = x + y * (self.depthWidth)
-        #         d = depth[offset]
-        #         total += 1
-        #         sumDepth += d
-        #
-        # return (sumDepth / total)
+                try:
+                    offset = row + col * (rows)
+                except IndexError as e:
+                    print e
+                data = depthArray[offset]
+                total += 1
+                sumDepth += data
+
+        return (sumDepth / total)
 
     # calculate the skeleton points of the depth array
     def getSkeleton(self, depthArray, average):
@@ -195,16 +199,19 @@ class Kinect:
         end = time.time() + duration
         self.device.start()
 
+        registration = Registration(self.device.getIrCameraParams(),
+                                    self.device.getColorCameraParams())
 
-        d = self.update()
-        print d
-        # out = self.depthMatrixToPointCloudPos2(d)
-        # print out
-        # print np.mean(out)
+        while time.time() < end:
+            d = self.update(registration)
+            m =  self.getMeanDepth(d)
+            print m
 
         self.device.stop()
+
 
     def exit(self):
         self.device.stop()
         self.device.close()
 
+2
