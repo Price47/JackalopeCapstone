@@ -1,0 +1,60 @@
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp: In function 'int main(int, char**)':
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:271:28: error: template argument for 'template<class> class std::allocator' uses local type 'main(int, char**)::dataPoint'
+       std::vector<dataPoint> depthArray;
+                            ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:271:28: error:   trying to instantiate 'template<class> class std::allocator'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:271:28: error: template argument 2 is invalid
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:271:40: error: invalid type in declaration before ';' token
+       std::vector<dataPoint> depthArray;
+                                        ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:272:28: error: template argument for 'template<class> class std::allocator' uses local type 'main(int, char**)::dataPoint'
+       std::vector<dataPoint> body;
+                            ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:272:28: error:   trying to instantiate 'template<class> class std::allocator'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:272:28: error: template argument 2 is invalid
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:272:34: error: invalid type in declaration before ';' token
+       std::vector<dataPoint> body;
+                                  ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:287:26: error: request for member 'push_back' in 'depthArray', which is of non-class type 'int'
+               depthArray.push_back(d);
+                          ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:30: error: template argument for 'template<class> class std::allocator' uses local type 'main(int, char**)::dataPoint'
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                              ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:30: error:   trying to instantiate 'template<class> class std::allocator'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:30: error: template argument 2 is invalid
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:42: error: invalid type in declaration before 'it'
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                                          ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:42: error: expected ';' before 'it'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:42: error: 'it' was not declared in this scope
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:57: error: request for member 'begin' in 'depthArray', which is of non-class type 'int'
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                                                         ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:80: error: request for member 'end' in 'depthArray', which is of non-class type 'int'
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                                                                                ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:85: error: expected ')' before ';' token
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                                                                                     ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:295:86: error: 'it' was not declared in this scope
+     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
+                                                                                      ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:30: error: template argument for 'template<class> class std::allocator' uses local type 'main(int, char**)::dataPoint'
+     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
+                              ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:30: error:   trying to instantiate 'template<class> class std::allocator'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:30: error: template argument 2 is invalid
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:42: error: invalid type in declaration before 'it'
+     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
+                                          ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:42: error: expected ';' before 'it'
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:51: error: request for member 'begin' in 'body', which is of non-class type 'int'
+     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
+                                                   ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:68: error: request for member 'end' in 'body', which is of non-class type 'int'
+     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
+                                                                    ^
+/home/odroid/libfreenect2/examples/protonect/Protonect.cpp:301:73: error: expected ')' before ';' token
+     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
+
