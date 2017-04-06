@@ -242,9 +242,13 @@ int main(int argc, char *argv[])
 /// [loop start]
 
   int drownFlag = 0;
+  int safeFlag = 0;
   float averageX = 0;
+  bool checkDrowning = true;
 
-  while(true)
+
+
+  while(checkDrowning)
   {
     if (!listener.waitForNewFrame(frames, 10*1000)) // 10 sconds
     {
@@ -259,7 +263,6 @@ int main(int argc, char *argv[])
 
       registration->apply(rgb, depth, &undistorted, &registered);
 
-      bool checkDrowning = true;
 
       int width = depth->width;
       int height = depth->height;
@@ -283,18 +286,18 @@ int main(int argc, char *argv[])
       float leftX = width;
       float average;
 
-
-
       for(int x=0;x<width;x++){
           for(int y=0;y<height;y++){
               float *frame_data = (float *)depth->data;
               float value = frame_data[y*width+x];
-              d.x=x;
-              d.y=y;
-              d.depth=value;
-              depthArray.push_back(d);
-              total++;
-              sum += value;
+              if(value<2500) {
+                d.x = x;
+                d.y = y;
+                d.depth = value;
+                depthArray.push_back(d);
+                total++;
+                sum += value;
+              }
           }
       }
 
@@ -306,20 +309,17 @@ int main(int argc, char *argv[])
         }
       }
 
+    float xSum = 0;
+    int xTotal = 0;
     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
-      if(it->x < s.leftX){
-        s.leftX = it->x;
-      }
-      if(it->x > s.rightX){
-        s.rightX = it->x;
-      }
+      xSum += it->x;
+      xTotal++;
     }
 
-    s.averageX = (s.leftX + s.rightX) / 2;
+    s.averageX = (xSum / xTotal);
 
     if(averageX == 0){
       averageX = s.averageX;
-      std::cout << "appending average x" << std::endl;
     }
     else if(averageX - 50 <= s.averageX <= averageX + 50){
       drownFlag++;
@@ -328,13 +328,15 @@ int main(int argc, char *argv[])
     std::cout << "Average depth : " << average << std::endl;
     std::cout << "Spine : " << s.averageX << std::endl;
 
-
-
-
     listener.release(frames);
 
-    if(drownFlag>10){
-      return(1);
+    if(drownFlag>75){
+      return 1;
+    }
+
+    safeFlag++;
+    if(safeFlag>100){
+      checkDrowning = false;
     }
   }
 
