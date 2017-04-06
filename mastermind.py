@@ -38,20 +38,24 @@ def analyze_with_kinect():
 
 	if int(output) == 1:
 		print 'drowning'
+		gpio_up(18)
+		wiringpi.delay(5000)
+		print 'drowning'
 		return False
 	elif int(output) == 0:
 		print 'not drowning'
 		return True
 	else:
 		print 'fuck'
-	
+
 # Initialize classes to control sonar array and drivetrain
+#wiringpi.wiringPiSetupGpio()
 #sonarArray = Sonar_Array()
 #drivetrain = Drivetrain()
 
 # Assorted Testing Functions
 #test_driving_functions(drivetrain)
-#test_gpio(18)
+test_gpio(187)
 #test_getting_all_distances(sonarArray)
 
 #main loop. watch_for_possible_victim() will run forever if no victim is found,
@@ -62,4 +66,4 @@ def analyze_with_kinect():
 	#watch_for_possible_victim()
 	#alert_pi()
 
-analyze_with_kinect()
+#analyze_with_kinect()

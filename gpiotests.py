@@ -54,3 +54,17 @@ def test_gpio(pinNum):
         elif input == "\'s\'":
             print("Brind down")
             wiringpi.digitalWrite(pin,LOW)
+
+def gpio_up(pinNum):
+    input = ''
+    pin = pinNum
+    wiringpi.pinMode(pin, OUTPUT)
+    wiringpi.digitalWrite(pin, HIGH)
+
+def gpio_down(pinNum):
+    input = ''
+    pin = pinNum
+    wiringpi.pinMode(pin, OUTPUT)
+    wiringpi.digitalWrite(pin, LOW)
+
+
