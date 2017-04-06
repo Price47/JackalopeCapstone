@@ -30,6 +30,9 @@
 #include <cstdlib>
 #include <signal.h>
 #include <vector>
+#include <string>
+#include <stdlib.h>
+#include <fstream>
 
 /// [headers]
 #include <libfreenect2/libfreenect2.hpp>
@@ -41,6 +44,19 @@
 #ifdef EXAMPLES_WITH_OPENGL_SUPPORT
 #include "viewer.h"
 #endif
+
+      struct dataPoint{
+          float x;
+          float y;
+          float depth;
+      }d;
+
+      struct spine{
+          float leftX;
+          float rightX;
+          float averageX;
+      }s;
+
 
 
 bool protonect_shutdown = false; ///< Whether the running application should shut down.
@@ -112,7 +128,7 @@ int main(int argc, char *argv[])
 /// [main]
 {
   std::string program_path(argv[0]);
-  std::cerr << "Version: " << LIBFREENECT2_VERSION << std::endl;
+  std::cerr << "Version: " << "2.0" << std::endl;
   std::cerr << "Environment variables: LOGFILE=<protonect.log>" << std::endl;
   std::cerr << "Usage: " << program_path << " [-gpu=<id>] [gl | cl | cuda | cpu] [<device serial>]" << std::endl;
   std::cerr << "        [-noviewer] [-norgb | -nodepth] [-help] [-version]" << std::endl;
@@ -196,154 +212,147 @@ int main(int argc, char *argv[])
 #endif
   protonect_shutdown = false;
 
-/// [listeners]
-  int types = 0;
-  if (enable_rgb)
-    types |= libfreenect2::Frame::Color;
-  if (enable_depth)
-    types |= libfreenect2::Frame::Ir | libfreenect2::Frame::Depth;
-  libfreenect2::SyncMultiFrameListener listener(types);
+  libfreenect2::SyncMultiFrameListener listener(libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
   libfreenect2::FrameMap frames;
+  libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4);
 
   dev->setColorFrameListener(&listener);
   dev->setIrAndDepthFrameListener(&listener);
-/// [listeners]
+  dev->start();
 
-/// [start]
-  if (enable_rgb && enable_depth)
-  {
-    if (!dev->start())
-      return -1;
-  }
-  else
-  {
-    if (!dev->startStreams(enable_rgb, enable_depth))
-      return -1;
-  }
+  std::cerr << "device serial: " << dev->getSerialNumber() << std::endl;
+  std::cerr << "device firmware: " << dev->getFirmwareVersion() << std::endl;
 
-  std::cout << "device serial: " << dev->getSerialNumber() << std::endl;
-  std::cout << "device firmware: " << dev->getFirmwareVersion() << std::endl;
-/// [start]
-
-/// [registration setup]
   libfreenect2::Registration* registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
-  libfreenect2::Frame undistorted(512, 424, 4), registered(512, 424, 4);
-/// [registration setup]
 
   size_t framecount = 0;
-#ifdef EXAMPLES_WITH_OPENGL_SUPPORT
-  Viewer viewer;
-  if (viewer_enabled)
-    viewer.initialize();
-#else
-  viewer_enabled = false;
-#endif
 
 /// [loop start]
+  //Initialize some variables and a file stream for deciding if drowning
+  int count = 0;
+  float baseline = 0;
+  float compoundAverage = 0;
+  int drownCount = 0;
+  int okCount = 0;
+  std::ofstream outputfile;
+  outputfile.open("output.txt");
 
-  int drownFlag = 0;
-  int safeFlag = 0;
-  float averageX = 0;
-  bool checkDrowning = true;
-
-
-
-  while(checkDrowning)
+  while(count<45 && !protonect_shutdown)
   {
-    if (!listener.waitForNewFrame(frames, 10*1000)) // 10 sconds
-    {
-      std::cout << "timeout!" << std::endl;
-      return -1;
-    }
+    listener.waitForNewFrame(frames);
     libfreenect2::Frame *rgb = frames[libfreenect2::Frame::Color];
     libfreenect2::Frame *ir = frames[libfreenect2::Frame::Ir];
     libfreenect2::Frame *depth = frames[libfreenect2::Frame::Depth];
-/// [loop start]
-
-
+    framecount++;
       registration->apply(rgb, depth, &undistorted, &registered);
-
 
       int width = depth->width;
       int height = depth->height;
-
-      struct dataPoint{
-          float x;
-          float y;
-          float depth;
-      }d;
-
-      struct spine{
-          float leftX;
-          float rightX;
-          float averageX;
-      }s;
+      float averageX = 0;
 
       std::vector<dataPoint> depthArray;
       std::vector<dataPoint> body;
 
-      float sum=0, total=0, rightX=0;
-      float leftX = width;
+      float sum=0;
       float average;
+      int total = 0;
+      float leftX=width, rightX=0;
 
       for(int x=0;x<width;x++){
           for(int y=0;y<height;y++){
               float *frame_data = (float *)depth->data;
               float value = frame_data[y*width+x];
-              if(value<2500) {
-                d.x = x;
-                d.y = y;
-                d.depth = value;
-                depthArray.push_back(d);
-                total++;
-                sum += value;
-              }
+              d.x=x;
+              d.y=y;
+              d.depth=value;
+              depthArray.push_back(d);
+              total++;
+              sum += value;
           }
       }
 
       average = sum/total;
-
     for(std::vector<dataPoint>::iterator it= depthArray.begin();it!=depthArray.end();it++){
         if(it->depth >= average - 100 && it->depth <= average + 100){
           body.push_back(*it);
         }
       }
-
-    float xSum = 0;
-    int xTotal = 0;
     for(std::vector<dataPoint>::iterator it= body.begin();it!=body.end();it++){
-      xSum += it->x;
-      xTotal++;
+      if(it->x < s.leftX){
+        s.leftX = it->x;
+      }
+      if(it->x > s.rightX){
+        s.rightX = it->x;
+      }
     }
-
-    s.averageX = (xSum / xTotal);
-
+    s.averageX = (s.leftX + s.rightX) / 2;
     if(averageX == 0){
       averageX = s.averageX;
     }
-    else if(averageX - 50 <= s.averageX <= averageX + 50){
-      drownFlag++;
+    else{
+      
     }
 
-    std::cout << "Average depth : " << average << std::endl;
-    std::cout << "Spine : " << s.averageX << std::endl;
+    std::cerr << "Average depth : " << average << std::endl;
+    std::cerr << "Spine : " << s.averageX << std::endl;
 
+
+    //Count the iterations, and establish the compound average of all frames so far
+    count++;
+    if(count == 1)
+	compoundAverage = average;
+    else
+	compoundAverage = ((compoundAverage*(count-1)*1.0)+average)/count*1.0;
+
+    //Write all of this data to output.txt to more easily parse the results
+    outputfile << "Count: " << count << std::endl;
+    outputfile << "Compound Average: " << compoundAverage << std::endl;
+    outputfile << "Average of current frame: " << average << std::endl;
+    outputfile << "First Equation check: " << compoundAverage*1.01 << std::endl;
+    outputfile << "Second equation check: " << compoundAverage*.99 << std::endl;
+
+    //Check if the current average is within 3% on each side of compound average
+    //Increment the respective count, and depending on which is bigger at the end of all
+    //trials, return either a victim spotted or not
+    if((average > compoundAverage*.99) && (average < compoundAverage*1.01))
+        drownCount++;
+    else
+        okCount++;
+
+    //Write current counts to file
+    outputfile << "DrownCount: " << drownCount << " OkCount: " << okCount << std::endl << std::endl;
+
+
+
+/// [loop end]
     listener.release(frames);
-
-    if(drownFlag>75){
-      return 1;
-    }
-
-    safeFlag++;
-    if(safeFlag>100){
-      checkDrowning = false;
-    }
+    /** libfreenect2::this_thread::sleep_for(libfreenect2::chrono::milliseconds(100)); */
   }
+/// [loop end]\
 
+
+
+
+
+
+  // TODO: restarting ir stream doesn't work!
+  // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
+/// [stop]
   dev->stop();
   dev->close();
+/// [stop]
 
   delete registration;
 
-  return 0;
+
+if(drownCount >= okCount){
+  	///drowning
+	return 1;
 }
+else{
+	/// not drowning
+ 	return 0;
+}
+}
+
+
