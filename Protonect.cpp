@@ -240,8 +240,11 @@ int main(int argc, char *argv[])
 #endif
 
 /// [loop start]
-    int i = 0;
-  while(i<7)
+
+  int drownFlag = 0;
+  float averageX = 0;
+
+  while(true)
   {
     if (!listener.waitForNewFrame(frames, 10*1000)) // 10 sconds
     {
@@ -256,9 +259,10 @@ int main(int argc, char *argv[])
 
       registration->apply(rgb, depth, &undistorted, &registered);
 
+      bool checkDrowning = true;
+
       int width = depth->width;
       int height = depth->height;
-      float averageX = 0;
 
       struct dataPoint{
           float x;
@@ -275,10 +279,10 @@ int main(int argc, char *argv[])
       std::vector<dataPoint> depthArray;
       std::vector<dataPoint> body;
 
-      float sum=0;
+      float sum=0, total=0, rightX=0;
+      float leftX = width;
       float average;
-      int total = 0;
-      float leftX=width, rightX=0;
+
 
 
       for(int x=0;x<width;x++){
@@ -312,11 +316,13 @@ int main(int argc, char *argv[])
     }
 
     s.averageX = (s.leftX + s.rightX) / 2;
+
     if(averageX == 0){
       averageX = s.averageX;
+      std::cout << "appending average x" << std::endl;
     }
-    else{
-      
+    else if(averageX - 50 <= s.averageX <= averageX + 50){
+      drownFlag++;
     }
 
     std::cout << "Average depth : " << average << std::endl;
@@ -324,18 +330,16 @@ int main(int argc, char *argv[])
 
 
 
-/// [loop end]
-    listener.release(frames);
-    /** libfreenect2::this_thread::sleep_for(libfreenect2::chrono::milliseconds(100)); */
-  }
-/// [loop end]
 
-  // TODO: restarting ir stream doesn't work!
-  // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
-/// [stop]
+    listener.release(frames);
+
+    if(drownFlag>10){
+      return(1);
+    }
+  }
+
   dev->stop();
   dev->close();
-/// [stop]
 
   delete registration;
 
