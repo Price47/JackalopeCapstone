@@ -21,7 +21,8 @@ def test_driving_functions(dt):
     print("s: Turn Left")
     print("d: Turn Right")
     print("k: Stop All Movement")
-    print("l: Retract Piston")
+    print("o: Move piston out")
+    print("l: Move piston in")
     input = ''
     while input != "\'x\'":
         input = repr(readchar.readchar())
@@ -34,17 +35,18 @@ def test_driving_functions(dt):
         elif input == "\'d\'":
             dt.turn_right()
         elif input == "\'k\'":
-            print("stopping all")
             dt.stop_all()
+        elif input == "\'o\'":
+	    dt.piston_out()
         elif input == "\'l\'":
             print ("")
-            dt.reset_piston()
+            dt.piston_in()
     dt.stop_all()
 
 def test_gpio(pinNum):
     input = ''
     pin = pinNum
-    wiringpi.pinMode(pin, OUTPUT)
+    #wiringpi.pinMode(pin, OUTPUT)
 
     while input != "\'x\'":
         input = repr(readchar.readchar())
@@ -52,7 +54,7 @@ def test_gpio(pinNum):
             print("Bring UP")
             wiringpi.digitalWrite(pin,HIGH)
         elif input == "\'s\'":
-            print("Brind down")
+            print("Bring down")
             wiringpi.digitalWrite(pin,LOW)
 
 def gpio_up(pinNum):

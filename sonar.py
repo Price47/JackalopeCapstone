@@ -36,11 +36,11 @@ class Sonar_Array(object):
         #sensors.append(Sensor(CENTER_TRIG, RIGHT_SENSE_ECHO, 1))
         #sensors.append(Sensor(CENTER_TRIG, LEFT_SENSE_ECHO, -1))
         wiringpi.digitalWrite(OUTPUT_ENABLED, HIGH)
-
         for sensor in self.sensors:
             wiringpi.pinMode(sensor.trigger, OUTPUT)
-            wiringpi.pinMode(sensor.echo, INPUT)
+	    print 'for'
 
+            wiringpi.pinMode(sensor.echo, INPUT)
         #wiringpi.digitalWrite(CENTER_TRIG, HIGH)
         #wiringpi.digitalWrite(CENTER_ECHO, HIGH)
 

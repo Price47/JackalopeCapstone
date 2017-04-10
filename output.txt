@@ -1,105 +1,315 @@
 Count: 1
-Compound Average: 557.091
-Average of current frame: 557.091
-First Equation check: 562.662
-Second equation check: 551.52
+Compound Average: 456.245
+Average of current frame: 456.245
+First Equation check: 460.807
+Second equation check: 451.682
 DrownCount: 1 OkCount: 0
 
 Count: 2
-Compound Average: 558.122
-Average of current frame: 559.154
-First Equation check: 563.703
-Second equation check: 552.541
-DrownCount: 2 OkCount: 0
+Compound Average: 450.217
+Average of current frame: 444.19
+First Equation check: 454.719
+Second equation check: 445.715
+DrownCount: 1 OkCount: 1
 
 Count: 3
-Compound Average: 558.172
-Average of current frame: 558.272
-First Equation check: 563.754
-Second equation check: 552.591
-DrownCount: 3 OkCount: 0
+Compound Average: 448.817
+Average of current frame: 446.017
+First Equation check: 453.305
+Second equation check: 444.329
+DrownCount: 2 OkCount: 1
 
 Count: 4
-Compound Average: 557.978
-Average of current frame: 557.394
-First Equation check: 563.558
-Second equation check: 552.398
-DrownCount: 4 OkCount: 0
+Compound Average: 450.212
+Average of current frame: 454.398
+First Equation check: 454.714
+Second equation check: 445.71
+DrownCount: 3 OkCount: 1
 
 Count: 5
-Compound Average: 557.729
-Average of current frame: 556.732
-First Equation check: 563.306
-Second equation check: 552.151
-DrownCount: 5 OkCount: 0
+Compound Average: 451.13
+Average of current frame: 454.799
+First Equation check: 455.641
+Second equation check: 446.618
+DrownCount: 4 OkCount: 1
 
 Count: 6
-Compound Average: 557.826
-Average of current frame: 558.31
-First Equation check: 563.404
-Second equation check: 552.247
-DrownCount: 6 OkCount: 0
+Compound Average: 451.649
+Average of current frame: 454.244
+First Equation check: 456.165
+Second equation check: 447.132
+DrownCount: 5 OkCount: 1
 
 Count: 7
-Compound Average: 558.035
-Average of current frame: 559.295
-First Equation check: 563.616
-Second equation check: 552.455
-DrownCount: 7 OkCount: 0
+Compound Average: 451.609
+Average of current frame: 451.37
+First Equation check: 456.125
+Second equation check: 447.093
+DrownCount: 6 OkCount: 1
 
 Count: 8
-Compound Average: 558.038
-Average of current frame: 558.053
-First Equation check: 563.618
-Second equation check: 552.457
-DrownCount: 8 OkCount: 0
+Compound Average: 451.745
+Average of current frame: 452.695
+First Equation check: 456.262
+Second equation check: 447.227
+DrownCount: 7 OkCount: 1
 
 Count: 9
-Compound Average: 558.122
-Average of current frame: 558.797
-First Equation check: 563.703
-Second equation check: 552.541
-DrownCount: 9 OkCount: 0
+Compound Average: 452.3
+Average of current frame: 456.744
+First Equation check: 456.823
+Second equation check: 447.777
+DrownCount: 8 OkCount: 1
 
 Count: 10
-Compound Average: 558.211
-Average of current frame: 559.008
-First Equation check: 563.793
-Second equation check: 552.628
-DrownCount: 10 OkCount: 0
+Compound Average: 452.728
+Average of current frame: 456.581
+First Equation check: 457.256
+Second equation check: 448.201
+DrownCount: 9 OkCount: 1
 
 Count: 11
-Compound Average: 558.252
-Average of current frame: 558.662
-First Equation check: 563.834
-Second equation check: 552.669
-DrownCount: 11 OkCount: 0
+Compound Average: 452.72
+Average of current frame: 452.636
+First Equation check: 457.247
+Second equation check: 448.193
+DrownCount: 10 OkCount: 1
 
 Count: 12
-Compound Average: 558.299
-Average of current frame: 558.822
-First Equation check: 563.882
-Second equation check: 552.716
-DrownCount: 12 OkCount: 0
+Compound Average: 452.781
+Average of current frame: 453.447
+First Equation check: 457.308
+Second equation check: 448.253
+DrownCount: 11 OkCount: 1
 
 Count: 13
-Compound Average: 558.355
-Average of current frame: 559.03
-First Equation check: 563.939
-Second equation check: 552.772
-DrownCount: 13 OkCount: 0
+Compound Average: 452.643
+Average of current frame: 450.993
+First Equation check: 457.17
+Second equation check: 448.117
+DrownCount: 12 OkCount: 1
 
 Count: 14
-Compound Average: 558.373
-Average of current frame: 558.598
-First Equation check: 563.956
-Second equation check: 552.789
-DrownCount: 14 OkCount: 0
+Compound Average: 452.388
+Average of current frame: 449.073
+First Equation check: 456.912
+Second equation check: 447.864
+DrownCount: 13 OkCount: 1
 
 Count: 15
-Compound Average: 558.331
-Average of current frame: 557.749
-First Equation check: 563.914
-Second equation check: 552.748
-DrownCount: 15 OkCount: 0
+Compound Average: 452.134
+Average of current frame: 448.569
+First Equation check: 456.655
+Second equation check: 447.612
+DrownCount: 14 OkCount: 1
+
+Count: 16
+Compound Average: 451.759
+Average of current frame: 446.134
+First Equation check: 456.276
+Second equation check: 447.241
+DrownCount: 14 OkCount: 2
+
+Count: 17
+Compound Average: 451.555
+Average of current frame: 448.29
+First Equation check: 456.07
+Second equation check: 447.039
+DrownCount: 15 OkCount: 2
+
+Count: 18
+Compound Average: 451.493
+Average of current frame: 450.445
+First Equation check: 456.008
+Second equation check: 446.978
+DrownCount: 16 OkCount: 2
+
+Count: 19
+Compound Average: 451.756
+Average of current frame: 456.487
+First Equation check: 456.273
+Second equation check: 447.238
+DrownCount: 16 OkCount: 3
+
+Count: 20
+Compound Average: 451.894
+Average of current frame: 454.515
+First Equation check: 456.413
+Second equation check: 447.375
+DrownCount: 17 OkCount: 3
+
+Count: 21
+Compound Average: 451.982
+Average of current frame: 453.752
+First Equation check: 456.502
+Second equation check: 447.462
+DrownCount: 18 OkCount: 3
+
+Count: 22
+Compound Average: 451.984
+Average of current frame: 452.013
+First Equation check: 456.503
+Second equation check: 447.464
+DrownCount: 19 OkCount: 3
+
+Count: 23
+Compound Average: 452.052
+Average of current frame: 453.564
+First Equation check: 456.573
+Second equation check: 447.532
+DrownCount: 20 OkCount: 3
+
+Count: 24
+Compound Average: 452.154
+Average of current frame: 454.48
+First Equation check: 456.675
+Second equation check: 447.632
+DrownCount: 21 OkCount: 3
+
+Count: 25
+Compound Average: 452.219
+Average of current frame: 453.795
+First Equation check: 456.741
+Second equation check: 447.697
+DrownCount: 22 OkCount: 3
+
+Count: 26
+Compound Average: 452.498
+Average of current frame: 459.475
+First Equation check: 457.023
+Second equation check: 447.973
+DrownCount: 22 OkCount: 4
+
+Count: 27
+Compound Average: 452.661
+Average of current frame: 456.896
+First Equation check: 457.188
+Second equation check: 448.135
+DrownCount: 23 OkCount: 4
+
+Count: 28
+Compound Average: 452.973
+Average of current frame: 461.385
+First Equation check: 457.502
+Second equation check: 448.443
+DrownCount: 23 OkCount: 5
+
+Count: 29
+Compound Average: 453.297
+Average of current frame: 462.391
+First Equation check: 457.83
+Second equation check: 448.765
+DrownCount: 23 OkCount: 6
+
+Count: 30
+Compound Average: 453.701
+Average of current frame: 465.396
+First Equation check: 458.238
+Second equation check: 449.164
+DrownCount: 23 OkCount: 7
+
+Count: 31
+Compound Average: 454.044
+Average of current frame: 464.343
+First Equation check: 458.585
+Second equation check: 449.504
+DrownCount: 23 OkCount: 8
+
+Count: 32
+Compound Average: 454.178
+Average of current frame: 458.324
+First Equation check: 458.72
+Second equation check: 449.636
+DrownCount: 24 OkCount: 8
+
+Count: 33
+Compound Average: 454.259
+Average of current frame: 456.844
+First Equation check: 458.801
+Second equation check: 449.716
+DrownCount: 25 OkCount: 8
+
+Count: 34
+Compound Average: 454.172
+Average of current frame: 451.314
+First Equation check: 458.714
+Second equation check: 449.63
+DrownCount: 26 OkCount: 8
+
+Count: 35
+Compound Average: 453.963
+Average of current frame: 446.86
+First Equation check: 458.503
+Second equation check: 449.423
+DrownCount: 26 OkCount: 9
+
+Count: 36
+Compound Average: 453.898
+Average of current frame: 451.605
+First Equation check: 458.437
+Second equation check: 449.359
+DrownCount: 27 OkCount: 9
+
+Count: 37
+Compound Average: 453.904
+Average of current frame: 454.135
+First Equation check: 458.443
+Second equation check: 449.365
+DrownCount: 28 OkCount: 9
+
+Count: 38
+Compound Average: 453.943
+Average of current frame: 455.38
+First Equation check: 458.482
+Second equation check: 449.403
+DrownCount: 29 OkCount: 9
+
+Count: 39
+Compound Average: 454.032
+Average of current frame: 457.419
+First Equation check: 458.572
+Second equation check: 449.492
+DrownCount: 30 OkCount: 9
+
+Count: 40
+Compound Average: 454.206
+Average of current frame: 460.985
+First Equation check: 458.748
+Second equation check: 449.664
+DrownCount: 30 OkCount: 10
+
+Count: 41
+Compound Average: 454.518
+Average of current frame: 466.992
+First Equation check: 459.063
+Second equation check: 449.973
+DrownCount: 30 OkCount: 11
+
+Count: 42
+Compound Average: 454.76
+Average of current frame: 464.711
+First Equation check: 459.308
+Second equation check: 450.213
+DrownCount: 30 OkCount: 12
+
+Count: 43
+Compound Average: 455.029
+Average of current frame: 466.297
+First Equation check: 459.579
+Second equation check: 450.478
+DrownCount: 30 OkCount: 13
+
+Count: 44
+Compound Average: 455.229
+Average of current frame: 463.85
+First Equation check: 459.781
+Second equation check: 450.677
+DrownCount: 30 OkCount: 14
+
+Count: 45
+Compound Average: 455.732
+Average of current frame: 477.859
+First Equation check: 460.289
+Second equation check: 451.175
+DrownCount: 30 OkCount: 15
 

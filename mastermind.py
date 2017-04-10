@@ -23,13 +23,14 @@ def watch_for_possible_victim():
             		# if the sonars detect an object within a 3 meter radius, take a closer look
             		if temp_dist < 3.0:
             	    		rotate_robot_to_object(sensor)
-            	    		sensor.baseline = temp_dist
+				# might have to return a value from rotation function, if it doesn't wait for it to be in the proper position
             	    		check_for_victim = analyze_with_kinect()
 
 # return bool is in reference not to drowning, but to whether the loop 
 # which contains it should continue running. Confusing, maybe, so I'm
 # sorry
 def analyze_with_kinect():
+	gpio_down(18)
 	response = subprocess.check_output(['bash','run.sh'])
 	
 	res = str(response[-2:])
@@ -40,23 +41,25 @@ def analyze_with_kinect():
 		print 'drowning'
 		gpio_up(18)
 		wiringpi.delay(5000)
+		gpio_down(18)
 		print 'drowning'
 		return False
 	elif int(output) == 0:
 		print 'not drowning'
 		return True
 	else:
-		print 'fuck'
+		print 'no kinect found'
 
 # Initialize classes to control sonar array and drivetrain
-#wiringpi.wiringPiSetupGpio()
-#sonarArray = Sonar_Array()
-#drivetrain = Drivetrain()
+wiringpi.wiringPiSetupGpio()
+sonarArray = Sonar_Array()
+drivetrain = Drivetrain()
 
 # Assorted Testing Functions
-#test_driving_functions(drivetrain)
-test_gpio(187)
+test_driving_functions(drivetrain)
+#test_gpio(187)
 #test_getting_all_distances(sonarArray)
+#analyze_with_kinect()
 
 #main loop. watch_for_possible_victim() will run forever if no victim is found,
 # so the alert_pi (which should alert the pi board but isn't implemented yet)
@@ -66,4 +69,3 @@ test_gpio(187)
 	#watch_for_possible_victim()
 	#alert_pi()
 
-#analyze_with_kinect()
